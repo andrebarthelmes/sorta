@@ -7,21 +7,21 @@ import sorta.model.*;
 public class EvolutionaryAlgorithm 
 {
 	private int selectionNumber;
-	private int populationNumber;
+	private int populationSize;
 	private TestDataGenerator testDataGenerator;
 	private PrintingPartion[] population;
  
-	public EvolutionaryAlgorithm(int _selectionNumber, int _populationNumber, TestDataGenerator _testDataGenerator) 
+	public EvolutionaryAlgorithm(int _selectionNumber, int _populationSize, TestDataGenerator _testDataGenerator) 
 	{
 		this.selectionNumber = _selectionNumber;
-		this.populationNumber = _populationNumber;
+		this.populationSize = _populationSize;
 		this.testDataGenerator = _testDataGenerator;
-		this.population = new PrintingPartion[_populationNumber];
+		this.population = new PrintingPartion[_populationSize];
 	}
 
 	public void initializePopulation() 
 	{
-		for(int i = 0; i < this.populationNumber; i++)
+		for(int i = 0; i < this.populationSize; i++)
 		{
 			Creation myCreation = new Creation(this.testDataGenerator.getTestOrders());
 			PrintingPartion currentPartition = myCreation.getCreatedPartition();
@@ -72,13 +72,14 @@ public class EvolutionaryAlgorithm
 
 	private PrintingPartion[] recombineParents() 
 	{
-		Recombination myRecombination = new Recombination(this.population,this.populationNumber);
+		Recombination myRecombination = new Recombination(this.population,this.populationSize);
 		return myRecombination.getChildren();
 	}
 
 	private PrintingPartion[] mutateChildren() 
 	{
-		Mutation myMutation = new Mutation(this.population);
+		int mutationStrength= 6;
+		Mutation myMutation = new Mutation(this.population, mutationStrength);
 		return myMutation.getChildren();
 	}
 
@@ -87,7 +88,7 @@ public class EvolutionaryAlgorithm
 		Evaluation myEvaluation = new Evaluation();
 		double bestFitness = Integer.MAX_VALUE;
 		int bestPopulation = -1;
-		for(int i = 0; i < this.populationNumber; i++)
+		for(int i = 0; i < this.populationSize; i++)
 		{
 			double fitness = myEvaluation.evaluate(this.population[i]).getFitness();
 			if(fitness < bestFitness)

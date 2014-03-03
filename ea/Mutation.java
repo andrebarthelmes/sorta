@@ -7,12 +7,12 @@ public class Mutation
 {
 	private PrintingPartion[] children;
 
-	public Mutation(PrintingPartion[] _population) 
+	public Mutation(PrintingPartion[] _population, int mutationStrength) 
 	{
 		this.children = _population;
 		for(int j = 0; j < _population.length;j++)
 		{
-			for(int i = 0; i < MathCalculator.sum0toN(TestData.spots-1);i++)
+			for(int i = 0; i < mutationStrength;i++)
 			{
 				this.children[j] = this.mutate(this.children[j]);
 			}
