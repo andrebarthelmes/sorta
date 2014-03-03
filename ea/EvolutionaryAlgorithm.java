@@ -10,6 +10,7 @@ public class EvolutionaryAlgorithm
 	private int populationSize;
 	private TestDataGenerator testDataGenerator;
 	private PrintingPartion[] population;
+	private double mutationStrength;
  
 	public EvolutionaryAlgorithm(int _selectionNumber, int _populationSize, TestDataGenerator _testDataGenerator) 
 	{
@@ -33,9 +34,9 @@ public class EvolutionaryAlgorithm
 	{
 		int generation = 1;
 		double bestFitness = Integer.MAX_VALUE;
-		double bestGen = 0;
 		String bestPrintingPartionFoundString = "";
-		while(generation < TestData.generations)
+		this.mutationStrength = TestData.spots;
+		while(generation < TestData.maxGenerations && ((int) this.mutationStrength != 0))
 		{
 			this.selectParents();
 			this.reproduceParents();
@@ -44,10 +45,9 @@ public class EvolutionaryAlgorithm
 			if(recentFitness < bestFitness)
 			{ 
 				bestFitness = recentFitness;
-				bestGen = generation;
 				bestPrintingPartionFoundString = bestPrintingPartion.toString();
+				System.out.println(generation+" # "+bestFitness);
 			}
-			System.out.println(generation+" # "+bestGen+" # "+bestFitness);
 			generation++;
 		}
 		System.out.println(bestPrintingPartionFoundString);
@@ -78,9 +78,19 @@ public class EvolutionaryAlgorithm
 
 	private PrintingPartion[] mutateChildren() 
 	{
-		int mutationStrength= 6;
-		Mutation myMutation = new Mutation(this.population, mutationStrength);
+		Mutation myMutation = new Mutation(this.population, (int) this.mutationStrength);
+		this.adoptMutationStrength(myMutation.getSuccessRatio());
 		return myMutation.getChildren();
+	}
+
+	private void adoptMutationStrength(double _successRatio) 
+	{
+		if(_successRatio > 0.2)
+		{
+			this.mutationStrength /= 0.9999;
+		} else if (_successRatio < 0.2) {
+			this.mutationStrength *= 0.9999;						
+		}		
 	}
 
 	public PrintingPartion evaluatePopulation()
