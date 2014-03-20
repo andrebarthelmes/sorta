@@ -8,12 +8,12 @@ public class TestDataGenerator
 	
 	public TestDataGenerator()
 	{
-		Order[] orderList = new Order[TestData.orderCountToTest]; 
-		for(int i = 0; i < TestData.orderCountToTest; i++)
+		Order[] orderList = new Order[Constants.orderCountToTest]; 
+		for(int i = 0; i < Constants.orderCountToTest; i++)
 		{
 			orderList[i] = this.generateRandomOrder();
 		}
-		this.testOrders = new OrderList(TestData.orderCountToTest);
+		this.testOrders = new OrderList(Constants.orderCountToTest);
 		this.testOrders.setOrderList(orderList);
 	}
 
@@ -24,8 +24,8 @@ public class TestDataGenerator
 	
 	private Order generateRandomOrder() 
 	{
-		int random = (int) (Math.random()*100);
-		int cardCount = TestData.availableOrderCount[TestData.probabilityofOrderCount[random]];
+		int random = (int) (RandomGenerator.getRandom()*100);
+		int cardCount = Constants.availableOrderCount[Constants.probabilityofOrderCount[random]]+Constants.addPages;
 		Order order_ = new Order(cardCount);
 		return order_;
 	}
@@ -33,7 +33,7 @@ public class TestDataGenerator
 	public String toString()
 	{
 		String orderPrint = "";
-		for(int i = 0; i < TestData.orderCountToTest; i++)
+		for(int i = 0; i < Constants.orderCountToTest; i++)
 		{
 			orderPrint += this.testOrders.getOrder(i).getId()+
 			              " : "+

@@ -1,16 +1,17 @@
 package sorta;
 
-import sorta.ea.*;
+import sorta.controller.spotea.*;
 
 public class Sorta 
 {
 
 	public static void main(String[] args) 
 	{
+		RandomGenerator.setupRandomGenerator();
 		TestDataGenerator myTDG = new TestDataGenerator();
-		EvolutionaryAlgorithm myEA = new EvolutionaryAlgorithm(10,100,myTDG);
+		SpoteaEvolutionaryAlgorithm myEA = new SpoteaEvolutionaryAlgorithm(Constants.spoteaParentSize,Constants.spoteaPopulationSize,myTDG);
 		myEA.initializePopulation();
-		myEA.evaluatePopulation();
+		myEA.evaluatePopulation(false);
 		myEA.run();
 	}
 }

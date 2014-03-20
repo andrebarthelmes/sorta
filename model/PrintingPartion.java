@@ -1,30 +1,37 @@
 package sorta.model;
 
-import sorta.TestData;
+import java.util.Vector;
+import sorta.Constants;
 
 public class PrintingPartion implements Comparable<PrintingPartion>
 {
-	private Order[][] partition;
+	private Vector<Vector<Order>> partition;
 	private double fitness;
+	private double oldFitness;
 		
 	public PrintingPartion()
 	{
-		this.partition = new Order[TestData.spots][TestData.orderCountToTest];
+		this.partition = new Vector<Vector<Order>>(Constants.spots);
+		for(int i = 0; i < Constants.spots; i++)
+		{
+			Vector<Order> myVect = new Vector<Order>();
+			this.partition.add(myVect);
+		}
 	}
 	
-	public Order[][] getPartition()
+	public Vector<Vector<Order>> getPartition()
 	{
 		return this.partition;
 	}
 
-	public void setPartition(Order[][] _partition)
+	public void setPartition(Vector<Vector<Order>> _partition)
 	{
 		this.partition = _partition;
 	}
 	
 	public Order getOrder(int _pageSpot, int _orderPosition)
 	{
-		return this.partition[_pageSpot][_orderPosition];
+		return this.partition.elementAt(_pageSpot).elementAt(_orderPosition);
 	}
 
 	public double getFitness()
@@ -32,41 +39,52 @@ public class PrintingPartion implements Comparable<PrintingPartion>
 		return this.fitness;
 	}
 	
+	public double getOldFitness()
+	{
+		return this.oldFitness;
+	}
+	
+	public void setOldFitness(double _oldFitness)
+	{
+		this.oldFitness = _oldFitness;
+	}	
+	
 	public void setFitness(double _fitness)
 	{
 		this.fitness = _fitness;
-	}
+	}	
 	
 	public void add(int _selectedSpot, Order _order) 
 	{
-		int nextFreeOrder = this.getNextFreeOrder(_selectedSpot);
-		this.partition[_selectedSpot][nextFreeOrder] = _order;		
+		this.partition.elementAt(_selectedSpot).add(_order);		
 	}
 	
-	public int getNextFreeOrder(int _spot)
+	public int getSpotOrderSize(int _spot)
 	{
-		int nextFreeOrder = -1;
-		do
-		{
-			nextFreeOrder++;
-		} while(this.partition[_spot][nextFreeOrder] != null);
-		return nextFreeOrder;
+		return this.partition.elementAt(_spot).size();
 	}
 	
-	public void swap(int _spotsOnPage1, int _orderPosition1, int _spotsOnPage2, int _orderPosition2)
+	public void moveOrderToOtherSpot(Order _orderToMove, int _newSpots)
 	{
-		Order temp = this.partition[_spotsOnPage1][_orderPosition1];
-		this.partition[_spotsOnPage1][_orderPosition1] = this.partition[_spotsOnPage2][_orderPosition2];
-		this.partition[_spotsOnPage2][_orderPosition2] = temp;
+		this.partition.elementAt(_orderToMove.getSpot()).removeElement(_orderToMove);
+		_orderToMove.setSpot(_newSpots);
+		this.partition.elementAt(_newSpots).add(_orderToMove);
 	}
 
 	public PrintingPartion getClone() 
 	{
-		PrintingPartion clonedPrintingPartion = new PrintingPartion();
-		clonedPrintingPartion.setFitness(this.fitness);
-		clonedPrintingPartion.setPartition(this.getPartition());
-		return clonedPrintingPartion;
-	}
+		PrintingPartion myClone = new PrintingPartion();
+		myClone.setFitness(this.fitness);
+		myClone.setOldFitness(this.oldFitness);
+		for(int i = 0; i<this.partition.size();i++)
+		{
+			for(int j = 0; j < this.partition.elementAt(i).size();j++)
+			{
+				myClone.add(i, this.partition.elementAt(i).elementAt(j));
+			}
+		}
+		return myClone;
+	}	
 	
 	@Override
 	public int compareTo(PrintingPartion _anotherPrintingPartion) 
@@ -74,10 +92,10 @@ public class PrintingPartion implements Comparable<PrintingPartion>
 		int return_;
 		if(this.getFitness() < _anotherPrintingPartion.getFitness())
 		{
-			return_ =  1;
+			return_ =  -1;
 		} else if(this.getFitness() > _anotherPrintingPartion.getFitness())
 		{
-			return_ =  -1;			
+			return_ =  1;			
 		} else {
 			return_ =  0;			
 		}
@@ -87,39 +105,39 @@ public class PrintingPartion implements Comparable<PrintingPartion>
 	public String toString()
 	{
 		String output_ = "##### Printing Partition #####\r\n";		
-		int[] spotSum = new int[TestData.spots];
-		for(int j = 0; j < TestData.orderCountToTest; j++)
+		int[] spotSum = new int[Constants.spots];
+		for(int j = 0; j < Constants.orderCountToTest; j++)
 		{
 			int emptyColums = 0;
-			for(int i = 0; i < TestData.spots; i++)
+			for(int i = 0; i < Constants.spots; i++)
 			{
-				if(this.partition[i][j] != null)
+				if(this.partition.elementAt(i).size() >  j && this.partition.elementAt(i).elementAt(j) != null)
 				{
-					String idString = String.format("%" + 3 + "s", this.partition[i][j].getId());
-					String cardCountString = String.format("%" + 3 + "s", this.partition[i][j].getCardCount());					
+					String idString = String.format("%" + 3 + "s", this.partition.elementAt(i).elementAt(j).getId());
+					String cardCountString = String.format("%" + 3 + "s", this.partition.elementAt(i).elementAt(j).getCardCount());					
 					output_ += idString + " : " + cardCountString+ " # ";
-					spotSum[i] += partition[i][j].getCardCount();
+					spotSum[i] += partition.elementAt(i).elementAt(j).getCardCount();
 				} else {
 					output_ += "___ : ___ # ";
 					emptyColums++;
 				}
 			}
 			output_ += "\r\n";
-			if(emptyColums == TestData.spots)
+			if(emptyColums == Constants.spots)
 			{
 				break;
 			}
 		}
 		int sum = 0;
-		for(int i = 0; i < TestData.spots; i++)
+		for(int i = 0; i < Constants.spots; i++)
 		{
 			output_ += String.format("%" + 9 + "s", spotSum[i])+" # ";
 			sum += spotSum[i];
 		}
 		output_ += "\r\n";
-		output_ += "##### Optimum : "+(int) sum / TestData.spots+ "   #####";
+		output_ += "##### Optimum : "+(int) sum / Constants.spots+ "   #####";
 		output_ += "\r\n";
 		output_ += "##### Fitness : "+ this.fitness + " #####";
 		return output_;
-	}	
+	}
 }
