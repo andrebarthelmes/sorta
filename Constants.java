@@ -5,17 +5,13 @@ public class Constants
 	public static int randomSeed = 752;
 	public static boolean useRandomSeed=false;
 	
-	public static int spoteaMaxGenerations = 50000;	
-	public static int spoteaParentSize = 4; 
-	public static int spoteaPopulationSize = 40; // populationSize - parentSize >= 5 !
-
-	public static int permuteaMaxGenerations = 50000;	
-	public static int permuteaParentSize = 4; 
-	public static int permuteaPopulationSize = 40; // populationSize - parentSize >= 5 !
-	
+	public static int maxGenerations = 50000;	
+	public static int parentSize = 4; 
+	public static int populationSize = 40; // populationSize - parentSize >= 5 (du to 1/5 rule)!
+	public static int startingColumnsOrderHeight = 3;
 	
 	public static int orderCountToTest = 30;
-	public static int spots = 4;
+	public static int columns = 4;
 	public static int addPages = 1;
 	public static int[] availableOrderCount =     {5,10,15,20,25,30,35,40,45,50,60,70,80,90,100,125,150,175,200};
 	public static int[] probabilityofOrderCount = {	0,0,0,0,							//5

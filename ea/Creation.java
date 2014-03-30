@@ -1,51 +1,67 @@
 package sorta.ea;
 
-import sorta.TestData;
-import sorta.model.*;
+import sorta.Constants;
+import sorta.model.Order;
+import sorta.model.OrderList;
+import sorta.model.PrintingPlan;
 
-public class Creation {
-
-	private PrintingPartion createdPartition;
+public class Creation 
+{
+	private PrintingPlan[] population;
+	private int optimumColumHeightPerBatchAndColumn;
+	private int[][] sheetsLeft;
+	private int sheetsLeftSum;
 	
-	public Creation(OrderList testOrders) 
+	public Creation(int _populationSize, OrderList orderList) 
 	{
-		int optimalSpotHeight = (int) testOrders.getCardCountSum() / TestData.spots;
-		int[] spaceLeft = new int[TestData.spots];
-		for (int i = 0; i < TestData.spots; i++)
+		this.population = new PrintingPlan[_populationSize];
+		for(int i = 0; i < _populationSize; i++)
 		{
-			spaceLeft[i] = optimalSpotHeight;
-		}
-		int spaceLeftSum = optimalSpotHeight * TestData.spots;
-		
-		this.createdPartition = new PrintingPartion();
-		
-		for(int i = 0; i < testOrders.getOrderListLength();i++)
-		{
-			int selectedSpot = this.selectColum(spaceLeft,spaceLeftSum);
-			spaceLeft[selectedSpot] -= testOrders.getOrder(i).getCardCount();
-			spaceLeftSum -= testOrders.getOrder(i).getCardCount();
-			this.createdPartition.add(selectedSpot,testOrders.getOrder(i));
+			PrintingPlan newPlan = this.getRandomPrintingPlan(orderList);
+			this.population[i] = newPlan;
 		}
 	}
 
-	private int selectColum(int[] _spaceLeft, int _spaceLeftSum) 
+	private PrintingPlan getRandomPrintingPlan(OrderList _orderList) 
 	{
-		int myRandom = (int) (Math.random() * _spaceLeftSum);
-		int currentSum=0;
-		for(int i = 0; i < TestData.spots; i++)
+		PrintingPlan newPlan = new PrintingPlan();
+		int batchSize = this.getNewStartingBatchNumber(_orderList.getOrderListLength());
+		int cardsToPrint = _orderList.getCardCountSum();
+		this.optimumColumHeightPerBatchAndColumn = (int) cardsToPrint/(batchSize*Constants.columns);
+		for(int i = 0; i < batchSize; i++)
 		{
-			currentSum += _spaceLeft[i];
-			if(myRandom < currentSum)
+			newPlan.addPrintingBatch();
+		}
+		this.sheetsLeft = new int[batchSize][Constants.columns];
+		this.sheetsLeftSum = 0;
+		for(int i = 0; i < batchSize; i++)
+		{
+			for(int j = 0; j < Constants.columns; j++)
 			{
-				return i;
+				this.sheetsLeft[i][j] = this.optimumColumHeightPerBatchAndColumn;
+				this.sheetsLeftSum += this.optimumColumHeightPerBatchAndColumn;
 			}
-		} 		
-		return TestData.spots;
+		}
+		for(int i = 0; i < _orderList.getOrderListLength(); i++)
+		{
+			this.placeOrderInPlan(newPlan,_orderList.getOrder(i));
+		}
+		return newPlan;
 	}
 
-	public PrintingPartion getCreatedPartition()
+	private void placeOrderInPlan(PrintingPlan newPlan, Order order) 
 	{
-		return this.createdPartition;
+		
 	}
-	
+
+	private int getNewStartingBatchNumber(int _numberOfOrders) 
+	{		
+		int batchNumber = (int) Math.round((_numberOfOrders/(Constants.columns*1.0*Constants.startingColumnsOrderHeight)+0.5));
+		return batchNumber;
+	}
+
+	public PrintingPlan[] getStartingPopulation() 
+	{
+		return this.population;
+	}
 }

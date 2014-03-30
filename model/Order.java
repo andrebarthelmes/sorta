@@ -6,6 +6,7 @@ public class Order implements Comparable<Order>
 	private int id;
 	private String sortBy = "id";
 	private int spot;
+	private int batch;
 	
 	static private int nextId = 0;
 	
@@ -35,6 +36,17 @@ public class Order implements Comparable<Order>
 	{
 		return this.spot;
 	}
+	
+	public void setBatch( int _batch)
+	{
+		this.batch = _batch;		
+	}
+	
+	public int getBatch()
+	{
+		return this.batch;
+	}
+	
 	public void setSortBy(String _varName)
 	{
 		this.sortBy = _varName;

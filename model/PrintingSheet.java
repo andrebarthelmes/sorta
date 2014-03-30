@@ -1,52 +1,41 @@
 package sorta.model;
 
-import sorta.*;
+import sorta.Constants;
 
 public class PrintingSheet 
 {
-	private Order[] spot;
-	private int[] orderPage;
+	private int[] columns;
 	
 	public PrintingSheet()
 	{
-		this.spot = new Order[Constants.spots];
-		this.orderPage = new int[Constants.spots];
+		this.columns = new int[Constants.columns]; 
 	}
 	
-	public void setOrderPageToSpot(Order _order, int orderPage, int _spot)
+	public PrintingSheet(int[] _ordersOnThisSheet)
 	{
-		this.spot[_spot] = _order;
-		this.orderPage[_spot] = orderPage;
+		this.columns = _ordersOnThisSheet;
 	}
 	
-	public boolean isOrderAssignedToSpot(int _spot)
+	public void setOrderToColumn(Order _order, int _column)
 	{
-		return this.spot[_spot] !=  null;
+		this.columns[_column] = _order.getId();
 	}
 	
-	public int[] getOrders()
+	public int getOrderIdFromColumn(int _column)
 	{
-		int[] ordersOnPage = new int[Constants.spots]; 
-		for(int i = 0; i < Constants.spots; i++)
+		return this.columns[_column];
+	}
+	
+	public boolean isIdenticalToSheet(PrintingSheet _sheet)
+	{
+		boolean matchFound = true;
+		for(int i = 0; i < this.columns.length;i++)
 		{
-			if(this.spot[i] != null)
+			if(this.columns[i] != _sheet.getOrderIdFromColumn(i))
 			{
-				ordersOnPage[i] = this.spot[i].getId();
-			} else {
-				ordersOnPage[i] = -1;
+				matchFound = false;
 			}
 		}
-		return ordersOnPage;
-	}
-	
-	public String toString()
-	{
-		String output = "# ";
-		int[] orderNumbers = this.getOrders();
-		for(int i = 0; i < Constants.spots; i++)
-		{
-			output += orderNumbers[i] + " # ";
-		}
-		return output;
+		return matchFound;
 	}
 }
